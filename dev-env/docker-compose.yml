@@ -1,0 +1,24 @@
+name: ida
+
+services:
+  jupyter:
+    build:
+      context: .
+    image: ida-jupyter:latest
+    container_name: ida-jupyter
+    ports:
+      - "8888:8888"
+    # Taken from your shell if set, empty otherwise. Empty means Jupyter
+    # asks for no token, which is the sane default on a local machine.
+    environment:
+      JUPYTER_TOKEN: "${JUPYTER_TOKEN:-}"
+    # The course notebooks, and the datasets beside them. This one mount
+    # is what makes the notebooks' LOCAL ALTERNATIVE cells work: a
+    # notebook in /workspace/2 reads ../datasets/, which is
+    # /workspace/datasets, which is practice/datasets on your disk.
+    volumes:
+      - ../practice:/workspace
+    # No `command:` here on purpose. The Dockerfile's CMD already starts
+    # Jupyter; repeating it in compose meant two copies that drifted apart,
+    # and the copy here expanded $JUPYTER_TOKEN on the host rather than in
+    # the container, so the token never arrived.
